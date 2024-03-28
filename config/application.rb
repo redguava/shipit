@@ -8,8 +8,11 @@ Bundler.require(*Rails.groups)
 
 module Shipit
   class Application < Rails::Application
+    Pubsubstub.use_persistent_connections = false
+
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1
+    config.active_job.queue_adapter = :sidekiq
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.

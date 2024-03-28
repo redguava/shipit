@@ -65,3 +65,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "sidekiq"
+# gem "shipit-engine", github: "Shopify/shipit-engine", tag: "v0.39.0"
+gem "shipit-engine", github: "Shopify/shipit-engine", branch: "main" # using main branch of shipit as it uses rails credentials instead of secrets
+
