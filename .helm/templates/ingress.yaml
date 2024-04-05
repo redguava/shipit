@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: shipit-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: shipit.ops.cliniko.io
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: shipit-svc
+                port:
+                  number: 80
+  tls:
+    - hosts:
+      - shipit.ops.cliniko.io
+      secretName: ingress-shipit-web

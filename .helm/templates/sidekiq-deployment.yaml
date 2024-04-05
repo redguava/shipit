@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipit-sidekiq
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shipit-sidekiq
+  template:
+    metadata:
+      labels:
+        app: shipit-sidekiq
+      annotations:
+        checksum/configmap-secrets: '{{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}'
+        checksum/configmap-envs: '{{ include (print $.Template.BasePath "/env.yaml") . | sha256sum }}'
+    spec:
+      containers:
+        - name: sidekiq
+          image: {{ $.Values.werf.image.app }}
+          command: ["bundle", "exec", "sidekiq"]
+          envFrom:
+            - configMapRef:
+                name: app-envs
+            - secretRef:
+                name: app-secrets
+          resources:
+            requests:
+              memory: "1024Mi"
+            limits:
+              memory: "1024Mi"
+          terminationGracePeriodSeconds: 60

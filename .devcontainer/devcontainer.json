@@ -7,12 +7,9 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "remoteEnv": {
     "PATH": "${containerWorkspaceFolder}/bin:${containerEnv:PATH}",
-    "VISUAL": "code --wait",
+    "EDITOR": "code --wait",
     "REDIS_URL": "redis://redis:6379/1",
-    "SHIPIT_DATABASE_HOST": "db",
-    // "MY_REMOTE_VARIABLE": "some-other-value-here",
-    // "NGROK_AUTHTOKEN": ""
-    // "MY_REMOTE_VARIABLE2": "${localEnv:SOME_LOCAL_VAR}"
+    "SHIPIT_DATABASE_HOST": "db"
   },
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
@@ -24,15 +21,20 @@
       "installDockerBuildx": true,
       "version": "latest",
       "dockerDashComposeVersion": "v2"
+    },
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
+      "version": "latest",
+      "helm": "latest",
+      "minikube": "latest"
     }
-  }
+  },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or the host.
   // "forwardPorts": [3000, 5432],
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  // "postCreateCommand": "bundle install && rake db:setup",
+  "postCreateCommand": "curl -sSL https://werf.io/install.sh | bash -s -- --version 1.2 --channel stable"
 
   // Configure tool-specific properties.
   // "customizations": {},

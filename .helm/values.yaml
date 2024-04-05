@@ -1,0 +1,3 @@
+app:
+  envs:
+    RAILS_ENV: production
