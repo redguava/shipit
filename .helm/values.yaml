@@ -1,3 +1,4 @@
 app:
+  hostname: https://shipit.ops.cliniko.io
   envs:
     RAILS_ENV: production

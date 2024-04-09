@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: shipit.ops.cliniko.io
+    - host: {{ $.Values.app.host }}
       http:
         paths:
           - pathType: Prefix
@@ -19,5 +19,5 @@ spec:
                   number: 80
   tls:
     - hosts:
-      - shipit.ops.cliniko.io
+      - {{ $.Values.app.host }}
       secretName: ingress-shipit-web
