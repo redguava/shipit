@@ -60,7 +60,7 @@ COPY --from=helm /usr/bin/helm /usr/local/bin/helm
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential curl unzip node-gyp libvips postgresql-client pkg-config python-is-python3 buildah slirp4netns fuse-overlayfs && \
+    apt-get install --no-install-recommends -y build-essential git curl unzip node-gyp libvips postgresql-client pkg-config python-is-python3 buildah slirp4netns fuse-overlayfs && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install AWS CLI version 2
