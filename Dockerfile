@@ -49,14 +49,47 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
+FROM bitnami/kubectl:latest as kubectl
+FROM alpine/helm:latest as helm
 
 # Final stage for app image
 FROM base
 
+COPY --from=kubectl /opt/bitnami/kubectl/bin/kubectl /usr/local/bin/kubectl
+COPY --from=helm /usr/bin/helm /usr/local/bin/helm
+
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl node-gyp libvips postgresql-client && \
+    apt-get install --no-install-recommends -y build-essential curl unzip node-gyp libvips postgresql-client pkg-config python-is-python3 buildah slirp4netns fuse-overlayfs && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+# Install AWS CLI version 2
+RUN ARCH=$(dpkg --print-architecture) && \
+    SUFFIX=$([ "$ARCH" = "arm64" ] && echo "aarch64" || echo "x86_64") && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-$SUFFIX.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm awscliv2.zip
+
+# Install AWS SSM Agent
+RUN ARCH=$(dpkg --print-architecture) \
+    && SUFFIX=$([ "$ARCH" = "arm64" ] && echo "arm64" || echo "64bit") \
+    && curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_$SUFFIX/session-manager-plugin.deb" -o "session-manager-plugin.deb" \
+    && dpkg -i session-manager-plugin.deb \
+    && rm session-manager-plugin.deb
+
+
+# Istall werf 
+# RUN curl -sSL https://werf.io/install.sh | bash -s -- --version 1.2 --channel stable
+# Accept Werf version as an argument
+ARG WERF_VERSION=1.2.300
+
+# Download Werf, replace vX.Y.Z with the desired version
+RUN curl -L https://tuf.werf.io/targets/releases/$WERF_VERSION/linux-amd64/bin/werf -o /usr/local/bin/werf \
+    && chmod +x /usr/local/bin/werf
+
+# (Optional) Verify Werf installation
+RUN werf version
 
 # Copy built artifacts: gems, application
 COPY --from=build /usr/local/bundle /usr/local/bundle
