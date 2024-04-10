@@ -1,0 +1,10 @@
+#!/bin/bash -e
+
+aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 349430847202.dkr.ecr.ap-southeast-2.amazonaws.com
+
+werf converge --repo 349430847202.dkr.ecr.ap-southeast-2.amazonaws.com/redguava/shipit --env prod
+
+# werf helm secret generate-secret-key
+# werf helm secret values edit .helm/secret-values.yaml
+# werf helm secret values decrypt .helm/secret-values.yaml
+# werf render --dev

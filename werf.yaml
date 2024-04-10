@@ -1,0 +1,8 @@
+configVersion: 1
+project: shipit
+build:
+  platform:
+  - linux/amd64
+---
+image: app
+dockerfile: Dockerfile

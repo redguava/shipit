@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: shipit-web-pdb
+spec:
+  maxUnavailable: "25%"
+  selector:
+    matchLabels:
+      app: shipit-web

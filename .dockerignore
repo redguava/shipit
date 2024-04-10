@@ -35,3 +35,7 @@
 /app/assets/builds/*
 !/app/assets/builds/.keep
 /public/assets
+
+/.helm/
+/.werf_secret_key
+/werf.yaml

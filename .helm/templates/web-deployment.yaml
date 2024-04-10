@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipit-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shipit-web
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: "25%"
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: shipit-web
+      annotations:
+        checksum/configmap-secrets: '{{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}'
+        checksum/configmap-envs: '{{ include (print $.Template.BasePath "/env.yaml") . | sha256sum }}'
+    spec:
+      containers:
+        - name: app
+          image: {{ $.Values.werf.image.app }}
+          command: ["bin/rails", "s"]
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: app-envs
+            - secretRef:
+                name: app-secrets
+          readinessProbe:
+            httpGet:
+              path: /up
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            successThreshold: 3
+            failureThreshold: 2
+          resources:
+            requests:
+              memory: "1024Mi"
+            limits:
+              memory: "1024Mi"
+          terminationGracePeriodSeconds: 60
