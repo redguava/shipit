@@ -23,7 +23,7 @@ dependencies:
 #   # it will run `bundle install`.
 # But if you are using something else you can specify it here.
   override:
-  - bundle install
+  - bundle install --without default production development test staging benchmark debug assets
   - yarn install
   - curl -sSL https://werf.io/install.sh | bash -s -- --ci
 
