@@ -18,12 +18,12 @@
 #       height: 180
 
 # The dependencies step if for installing your deploy script dependencies only.
-dependencies:
-#   # Shipit will try to detect your dependency system, for example if you have a Gemfile
-#   # it will run `bundle install`.
-# But if you are using something else you can specify it here.
-  override:
-  - bundle install --without default production development test staging benchmark debug assets
+# dependencies:
+# #   # Shipit will try to detect your dependency system, for example if you have a Gemfile
+# #   # it will run `bundle install`.
+# # But if you are using something else you can specify it here.
+#   override:
+#   - bundle install --without default production development test staging benchmark debug assets
   # - yarn install
   # - curl -sSL https://werf.io/install.sh | bash -s -- --ci
 
