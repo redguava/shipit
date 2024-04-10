@@ -24,7 +24,7 @@ dependencies:
 # But if you are using something else you can specify it here.
   override:
   - bundle install --without default production development test staging benchmark debug assets
-  - yarn install
+  # - yarn install
   - curl -sSL https://werf.io/install.sh | bash -s -- --ci
 
 #   # If you use Bundler, Shipit ignore most groups by default expecting all your deploy
