@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: shipit-cron-minutely
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            checksum/configmap-secrets: '{{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}'
+            checksum/configmap-envs: '{{ include (print $.Template.BasePath "/env.yaml") . | sha256sum }}'
+        spec:
+          containers:
+          - name: app
+            image: {{ $.Values.werf.image.app }}
+            command: [ "bin/rake", "cron:minutely" ]
+            envFrom:
+              - configMapRef:
+                  name: app-envs
+              - secretRef:
+                  name: app-secrets
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: shipit-cron-hourly
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            checksum/configmap-secrets: '{{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}'
+            checksum/configmap-envs: '{{ include (print $.Template.BasePath "/env.yaml") . | sha256sum }}'
+        spec:
+          containers:
+          - name: app
+            image: {{ $.Values.werf.image.app }}
+            command: [ "bin/rake", "cron:hourly" ]
+            envFrom:
+              - configMapRef:
+                  name: app-envs
+              - secretRef:
+                  name: app-secrets
+          restartPolicy: OnFailure
