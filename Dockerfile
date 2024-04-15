@@ -60,7 +60,7 @@ COPY --from=helm /usr/bin/helm /usr/local/bin/helm
 
 # Install packages needed for deployment
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git curl unzip node-gyp libvips postgresql-client pkg-config python-is-python3 buildah slirp4netns fuse-overlayfs && \
+    apt-get install --no-install-recommends -y build-essential git curl unzip node-gyp libvips postgresql-client pkg-config python-is-python3 buildah slirp4netns fuse-overlayfs uidmap libcap2-bin git-lfs gnupg jq && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Install AWS CLI version 2
@@ -78,6 +78,10 @@ RUN ARCH=$(dpkg --print-architecture) \
     && dpkg -i session-manager-plugin.deb \
     && rm session-manager-plugin.deb
 
+# Fix messed up setuid/setgid capabilities.
+RUN setcap cap_setuid+ep /usr/bin/newuidmap && \
+    setcap cap_setgid+ep /usr/bin/newgidmap && \
+    chmod u-s,g-s /usr/bin/newuidmap /usr/bin/newgidmap
 
 # Istall werf 
 # RUN curl -sSL https://werf.io/install.sh | bash -s -- --version 1.2 --channel stable
@@ -99,6 +103,15 @@ COPY --from=build /rails /rails
 RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails db log storage tmp data
 USER rails:rails
+
+RUN mkdir -p /home/rails/.local/share/containers
+VOLUME /home/rails/.local/share/containers
+
+# Fix fatal: detected dubious ownership in repository.
+RUN git config --global --add safe.directory '*'
+
+ENV WERF_CONTAINERIZED=yes
+ENV WERF_BUILDAH_MODE=auto
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
