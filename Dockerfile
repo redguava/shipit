@@ -40,6 +40,9 @@ RUN bundle install && \
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
+# Install ey-core
+RUN gem install ey-core
+
 # Copy application code
 COPY . .
 
