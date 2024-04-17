@@ -1,7 +1,12 @@
 #!/bin/bash -e
 
-aws ecr get-login-password --region ap-southeast-2 | docker login --username AWS --password-stdin 349430847202.dkr.ecr.ap-southeast-2.amazonaws.com
+export ECR_REPO="349430847202.dkr.ecr.ap-southeast-2.amazonaws.com"
+export WERF_REPO="$ECR_REPO/redguava/shipit"
+export WERF_ENV="prod"
+export WERF_ENABLE_PROCESS_EXTERMINATOR="1"
 
-werf build --repo 349430847202.dkr.ecr.ap-southeast-2.amazonaws.com/redguava/shipit
+aws ecr get-login-password --region ap-southeast-2 | werf cr login --username AWS --password-stdin $ECR_REPO
 
-# werf build --repo 349430847202.dkr.ecr.ap-southeast-2.amazonaws.com/redguava/shipit --dev
+werf build
+
+# werf build --dev
